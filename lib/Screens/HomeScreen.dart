@@ -1,7 +1,9 @@
 import 'package:calculadora/Utilities/constants.dart';
+import 'package:calculadora/Utilities/FloatingActionList.dart';
 import 'package:flutter/material.dart';
-import '../Utilities/Functions.dart';
+
 import '../enum/type.dart';
+import 'package:calculadora/widgets/Button.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -9,24 +11,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  var _textController1 = TextEditingController();
-  var _textController2 = TextEditingController();
+  double valor1;
+  double valor2;
+  String operacao;
   type tipo;
-  var resultado;
+  double resultado;
 
   @override
   void initState() {
+    valor1 = 0;
+    operacao = 'null';
+    valor2 = 0;
     resultado = 0;
     super.initState();
   }
 
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is removed from the
-    // widget tree.
-    _textController1.dispose();
-    _textController2.dispose();
-    super.dispose();
+  void limpar() {
+    setState(() {
+      valor1 = 0;
+      valor2 = 0;
+      operacao = 'null';
+      resultado = 0;
+    });
   }
 
   @override
@@ -40,144 +46,153 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           centerTitle: true,
         ),
-        body: Padding(
-          padding: EdgeInsets.fromLTRB(20, 40, 20, 0),
-          child: SingleChildScrollView(
-            child: Column(
+        body: Column(
+          children: [
+            Flexible(
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  itemCount: 5,
+                  itemBuilder: (context, i) => Button(
+                      value: i,
+                      funcao: () {
+                        setState(() {
+                          valor1 = i.toDouble();
+                        });
+                      })),
+            ),
+            Flexible(
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                itemCount: 5,
+                itemBuilder: (context, i) => Button(
+                  value: i + 5,
+                  funcao: () {
+                    setState(() {
+                      valor1 = (i + 5).toDouble();
+                    });
+                  },
+                ),
+              ),
+            ),
+            Flexible(
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                itemCount: 5,
+                itemBuilder: (context, i) => Padding(
+                  padding: EdgeInsets.all(10),
+                  child: FloatingActionButton(
+                    backgroundColor: tipo == type.values[i]
+                        ? kActiveCardColour
+                        : kInactiveCardColour,
+                    onPressed: () {
+                      setState(() {
+                        tipo = type.values[i];
+                        operacao = Floatingbuttons.operacoes[i];
+                      });
+                    },
+                    child: Text(
+                      Floatingbuttons.operacoes[i],
+                      style: kOperationsTextStyle,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Flexible(
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  itemCount: 5,
+                  itemBuilder: (context, i) => Button(
+                      value: i,
+                      funcao: () {
+                        setState(() {
+                          valor2 = i.toDouble();
+                        });
+                      })),
+            ),
+            Flexible(
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                itemCount: 5,
+                itemBuilder: (context, i) => Button(
+                  value: i + 5,
+                  funcao: () {
+                    setState(() {
+                      valor2 = (i + 5).toDouble();
+                    });
+                  },
+                ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Padding(
-                  padding: EdgeInsets.only(bottom: 20),
-                  child: TextField(
-                    decoration: InputDecoration(
-                        labelText: "Primeiro Valor",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        )),
-                    keyboardType: TextInputType.number,
-                    controller: _textController1,
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    FloatingActionButton(
-                      backgroundColor: tipo == type.somar
-                          ? kActiveCardColour
-                          : kInactiveCardColour,
-                      onPressed: () {
-                        setState(() {
-                          tipo = type.somar;
-                        });
-                      },
-                      child: Text(
-                        '+',
-                        style: kOperationsTextStyle,
-                      ),
-                    ),
-                    FloatingActionButton(
-                      backgroundColor: tipo == type.subtrair
-                          ? kActiveCardColour
-                          : kInactiveCardColour,
-                      onPressed: () {
-                        setState(() {
-                          tipo = type.subtrair;
-                        });
-                      },
-                      child: Text(
-                        '-',
-                        style: kOperationsTextStyle,
-                      ),
-                    ),
-                    FloatingActionButton(
-                      backgroundColor: tipo == type.multiplicar
-                          ? kActiveCardColour
-                          : kInactiveCardColour,
-                      onPressed: () {
-                        setState(() {
-                          tipo = type.multiplicar;
-                        });
-                      },
-                      child: Text(
-                        '*',
-                        style: kOperationsTextStyle,
-                      ),
-                    ),
-                    FloatingActionButton(
-                      backgroundColor: tipo == type.dividir
-                          ? kActiveCardColour
-                          : kInactiveCardColour,
-                      onPressed: () {
-                        setState(() {
-                          tipo = type.dividir;
-                        });
-                      },
-                      child: Text(
-                        '/',
-                        style: kOperationsTextStyle,
-                      ),
-                    )
-                  ],
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
-                  child: TextField(
-                    decoration: InputDecoration(
-                        labelText: "Segundo Valor",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        )),
-                    keyboardType: TextInputType.number,
-                    controller: _textController2,
-                  ),
+                FloatingActionButton(
+                  backgroundColor: kActiveCardColour,
+                  child: Icon(Icons.check),
+                  onPressed: () {
+                    switch (tipo) {
+                      case type.somar:
+                        resultado = valor1 + valor2;
+                        break;
+                      case type.subtrair:
+                        resultado = valor1 - valor2;
+                        break;
+                      case type.multiplicar:
+                        resultado = valor1 * valor2;
+                        break;
+                      case type.dividir:
+                        resultado = valor1 / valor2;
+                        break;
+                      case type.modulo:
+                        resultado = valor1 % valor2;
+                        break;
+                    }
+                    setState(() {});
+                    print(resultado);
+                  },
                 ),
                 FloatingActionButton(
                     backgroundColor: kActiveCardColour,
-                    child: Icon(Icons.check),
+                    child: Icon(Icons.clear),
                     onPressed: () {
-                      switch (tipo) {
-                        case type.somar:
-                          resultado = Functions.somar(
-                              double.parse(_textController1.text),
-                              double.parse(_textController2.text));
-                          break;
-                        case type.subtrair:
-                          resultado = Functions.subtrair(
-                              double.parse(_textController1.text),
-                              double.parse(_textController2.text));
-                          break;
-                        case type.multiplicar:
-                          resultado = Functions.multiplicar(
-                              double.parse(_textController1.text),
-                              double.parse(_textController2.text));
-                          break;
-                        case type.dividir:
-                          resultado = Functions.dividir(
-                              double.parse(_textController1.text),
-                              double.parse(_textController2.text));
-                          break;
-                      }
-                      setState(() {});
-                      print(resultado);
+                      limpar();
                     }),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Card(
-                    child: ListTile(
-                      leading: Text('Resultado: '),
-                      title: Text(resultado.toString()),
-                      dense: true,
-                    ),
-                  ),
-                )
               ],
             ),
-          ),
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: Card(
+                child: ListTile(
+                  leading: Text(
+                    'operação : ',
+                    style: kFinalTextStyle,
+                  ),
+                  title: Text(
+                      "${valor1.toString()}  ${operacao}  ${valor2.toString()}"),
+                  dense: true,
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: Card(
+                child: ListTile(
+                  leading: Text(
+                    'resultado: ',
+                    style: kFinalTextStyle,
+                  ),
+                  title: Text(resultado.toString()),
+                  dense: true,
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );

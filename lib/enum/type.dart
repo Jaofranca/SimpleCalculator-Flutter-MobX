@@ -1,1 +1,1 @@
-enum type { somar, subtrair, multiplicar, dividir }
+enum type { somar, subtrair, multiplicar, dividir, modulo }
