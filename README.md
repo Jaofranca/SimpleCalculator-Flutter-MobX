@@ -1,16 +1,11 @@
-# calculadora
+# Calculadora
 
-A new Flutter project.
+Uma Calculadora Simples feita em Flutter.
 
-## Getting Started
+## Dell Lead
 
-This project is a starting point for a Flutter application.
+Primeiro App desenvolvido no Curso da Dell Lead.
 
-A few resources to get you started if this is your first Flutter project:
+![Tela inicial](https://github.com/Jaofranca/SimpleCalculator-Flutter/blob/main/1.PNG) |  ![Escolha de Nomes](https://github.com/Jaofranca/SimpleCalculator-Flutter/blob/main/2.PNG)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
