@@ -1,40 +1,14 @@
+import 'package:calculadora/all_Controller.dart';
 import 'package:calculadora/Utilities/constants.dart';
 import 'package:calculadora/Utilities/FloatingActionList.dart';
 import 'package:flutter/material.dart';
-
 import '../enum/type.dart';
 import 'package:calculadora/widgets/Button.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
+final controller = All_Controller();
 
-class _HomeScreenState extends State<HomeScreen> {
-  double valor1;
-  double valor2;
-  String operacao;
-  type tipo;
-  double resultado;
-
-  @override
-  void initState() {
-    valor1 = 0;
-    operacao = 'null';
-    valor2 = 0;
-    resultado = 0;
-    super.initState();
-  }
-
-  void limpar() {
-    setState(() {
-      valor1 = 0;
-      valor2 = 0;
-      operacao = 'null';
-      resultado = 0;
-    });
-  }
-
+class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -46,154 +20,145 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           centerTitle: true,
         ),
-        body: Column(
-          children: [
-            Flexible(
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  shrinkWrap: true,
-                  itemCount: 5,
-                  itemBuilder: (context, i) => Button(
-                      value: i,
-                      funcao: () {
-                        setState(() {
-                          valor1 = i.toDouble();
-                        });
-                      })),
+        body: Column(children: [
+          Flexible(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemCount: 5,
+              itemBuilder: (context, i) => Button(
+                value: i,
+                funcao: () => controller.alterarValor1(i.toDouble()),
+              ),
             ),
-            Flexible(
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemCount: 5,
-                itemBuilder: (context, i) => Button(
+          ),
+          Flexible(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemCount: 5,
+              itemBuilder: (context, i) => Button(
                   value: i + 5,
-                  funcao: () {
-                    setState(() {
-                      valor1 = (i + 5).toDouble();
-                    });
-                  },
+                  funcao: () => controller.alterarValor1Plus(i.toDouble())),
+            ),
+          ),
+          Flexible(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemCount: 5,
+              itemBuilder: (context, i) => Padding(
+                padding: EdgeInsets.all(10),
+                child: FloatingActionButton(
+                  backgroundColor: controller.tipo == type.values[i]
+                      ? kActiveCardColour
+                      : kInactiveCardColour,
+                  onPressed: () => controller.setOperacao(i),
+                  child: Text(
+                    Floatingbuttons.operacoes[i],
+                    style: kOperationsTextStyle,
+                  ),
                 ),
               ),
             ),
-            Flexible(
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemCount: 5,
-                itemBuilder: (context, i) => Padding(
-                  padding: EdgeInsets.all(10),
-                  child: FloatingActionButton(
-                    backgroundColor: tipo == type.values[i]
-                        ? kActiveCardColour
-                        : kInactiveCardColour,
-                    onPressed: () {
-                      setState(() {
-                        tipo = type.values[i];
-                        operacao = Floatingbuttons.operacoes[i];
-                      });
-                    },
-                    child: Text(
-                      Floatingbuttons.operacoes[i],
-                      style: kOperationsTextStyle,
+          ),
+          Flexible(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemCount: 5,
+              itemBuilder: (context, i) => Button(
+                value: i,
+                funcao: () => controller.alterarValor2(
+                  i.toDouble(),
+                ),
+              ),
+            ),
+          ),
+          Flexible(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemCount: 5,
+              itemBuilder: (context, i) => Button(
+                value: i + 5,
+                funcao: () => controller.alterarValor2Plus(
+                  i.toDouble(),
+                ),
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              FloatingActionButton(
+                backgroundColor: kActiveCardColour,
+                child: Icon(Icons.check),
+                onPressed: () {
+                  switch (controller.tipo) {
+                    case type.somar:
+                      controller.resultado =
+                          controller.valor1 + controller.valor2;
+                      break;
+                    case type.subtrair:
+                      controller.resultado =
+                          controller.valor1 - controller.valor2;
+                      break;
+                    case type.multiplicar:
+                      controller.resultado =
+                          controller.valor1 * controller.valor2;
+                      break;
+                    case type.dividir:
+                      controller.resultado =
+                          controller.valor1 / controller.valor2;
+                      break;
+                    case type.modulo:
+                      controller.resultado =
+                          controller.valor1 % controller.valor2;
+                      break;
+                  }
+                  print(controller.resultado);
+                },
+              ),
+              FloatingActionButton(
+                backgroundColor: kActiveCardColour,
+                child: Icon(Icons.clear),
+                onPressed: controller.limpar,
+              ),
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Card(
+                  child: ListTile(
+                    leading: Text(
+                      'operação : ',
+                      style: kFinalTextStyle,
                     ),
+                    title: Observer(
+                      builder: (_) => Text(
+                          "${controller.valor1.toString()}  ${controller.operacao}  ${controller.valor2.toString()}"),
+                    ),
+                    dense: true,
                   ),
                 ),
               ),
-            ),
-            Flexible(
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  shrinkWrap: true,
-                  itemCount: 5,
-                  itemBuilder: (context, i) => Button(
-                      value: i,
-                      funcao: () {
-                        setState(() {
-                          valor2 = i.toDouble();
-                        });
-                      })),
-            ),
-            Flexible(
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemCount: 5,
-                itemBuilder: (context, i) => Button(
-                  value: i + 5,
-                  funcao: () {
-                    setState(() {
-                      valor2 = (i + 5).toDouble();
-                    });
-                  },
-                ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                FloatingActionButton(
-                  backgroundColor: kActiveCardColour,
-                  child: Icon(Icons.check),
-                  onPressed: () {
-                    switch (tipo) {
-                      case type.somar:
-                        resultado = valor1 + valor2;
-                        break;
-                      case type.subtrair:
-                        resultado = valor1 - valor2;
-                        break;
-                      case type.multiplicar:
-                        resultado = valor1 * valor2;
-                        break;
-                      case type.dividir:
-                        resultado = valor1 / valor2;
-                        break;
-                      case type.modulo:
-                        resultado = valor1 % valor2;
-                        break;
-                    }
-                    setState(() {});
-                    print(resultado);
-                  },
-                ),
-                FloatingActionButton(
-                    backgroundColor: kActiveCardColour,
-                    child: Icon(Icons.clear),
-                    onPressed: () {
-                      limpar();
-                    }),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Card(
-                child: ListTile(
-                  leading: Text(
-                    'operação : ',
-                    style: kFinalTextStyle,
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Card(
+                  child: ListTile(
+                    leading: Text(
+                      'resultado: ',
+                      style: kFinalTextStyle,
+                    ),
+                    title: Observer(
+                      builder: (_) => Text(controller.resultado.toString()),
+                    ),
+                    dense: true,
                   ),
-                  title: Text(
-                      "${valor1.toString()}  ${operacao}  ${valor2.toString()}"),
-                  dense: true,
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Card(
-                child: ListTile(
-                  leading: Text(
-                    'resultado: ',
-                    style: kFinalTextStyle,
-                  ),
-                  title: Text(resultado.toString()),
-                  dense: true,
-                ),
-              ),
-            )
-          ],
-        ),
+              )
+            ],
+          ),
+        ]),
       ),
     );
   }
