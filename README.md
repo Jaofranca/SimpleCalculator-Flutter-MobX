@@ -1,6 +1,6 @@
 # Calculadora
 
-Uma Calculadora Simples feita em Flutter.
+Uma Calculadora Simples feita em Flutter Utilizando MobX
 
 ## Dell Lead
 
